@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Kayıt Ol{% endblock %}
+{% block content %}
+<div class="content-section">
+    <h2 class="mt-4">Kayıt Ol</h2>
+    <form method="POST" class="mt-3">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            {{ form|crispy }}
+            {{ student_form|crispy }}
+        </fieldset>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+        </div>
+    </form>
+    <div class="border-top pt-3">
+        <small class="text-muted">Zaten bir hesabınız var mı? <a href="{% url 'login' %}">Giriş yapın</a>.</small>
+    </div>
+</div>
+<script type="text/javascript">
+  $(document).ready(function () {
+    // Select2'yi uygula
+    $("#id_university, #id_faculty, #id_department").select2({
+      width: '100%',
+      placeholder: "Seçiniz",
+      allowClear: true,
+      language: {
+        noResults: function () {
+          return "Sonuç bulunamadı";
+        }
+      }
+    });
+
+    $("#id_university").change(function () {
+      var url = "{% url 'accounts:ajax_load_faculties' %}";
+      var universityId = $(this).val();
+
+      $.ajax({
+        url: url,
+        data: {
+          'university': universityId
+        },
+        success: function (data) {
+          $("#id_faculty").html('<option value="">Fakülte seçiniz</option>');
+          $("#id_department").html('<option value="">Bölüm seçiniz</option>'); // temizle
+          $.each(data, function (key, value) {
+            $("#id_faculty").append('<option value="' + value.id + '">' + value.name + '</option>');
+          });
+          $("#id_faculty").trigger('change.select2');
+        }
+      });
+    });
+
+    $("#id_faculty").change(function () {
+      var url = "{% url 'accounts:ajax_load_departments' %}";
+      var facultyId = $(this).val();
+
+      $.ajax({
+        url: url,
+        data: {
+          'faculty': facultyId
+        },
+        success: function (data) {
+          $("#id_department").html('<option value="">Bölüm seçiniz</option>');
+          $.each(data, function (key, value) {
+            $("#id_department").append('<option value="' + value.id + '">' + value.name + '</option>');
+          });
+          $("#id_department").trigger('change.select2');
+        }
+      });
+    });
+  });
+</script>
+
+{% endblock %}

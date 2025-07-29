@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'course-list' %}">Courses</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ course.code }}</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h2 class="card-title">{{ course.name }}</h2>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ course.code }}</h6>
+                </div>
+                <div>
+                    <span class="badge {% if course.is_elective %}bg-info{% else %}bg-primary{% endif %} me-2">
+                        {% if course.is_elective %}Elective{% else %}Required{% endif %}
+                    </span>
+                    <span class="badge bg-secondary">{{ course.credits }} Credits</span>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row mt-4">
+                <div class="col-md-8">
+                    <h5>Course Description</h5>
+                    <p class="card-text">{{ course.description }}</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Course Details</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Department:</strong> {{ course.department.name }}</li>
+                                <li><strong>Faculty:</strong> {{ course.department.faculty.name }}</li>
+                                <li><strong>Created:</strong> {{ course.created_at|date:"F d, Y" }}</li>
+                                <li><strong>Last Updated:</strong> {{ course.updated_at|date:"F d, Y" }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if related_courses %}
+            <div class="mt-4">
+                <h5>Related Courses</h5>
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    {% for related_course in related_courses|slice:":3" %}
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ related_course.code }}</h6>
+                                <p class="card-text small">{{ related_course.name }}</p>
+                                <a href="{% url 'course-detail' related_course.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
