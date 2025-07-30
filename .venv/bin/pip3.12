@@ -1,4 +1,4 @@
-#!/home/amnesia/Desktop/Python/DTP/DTP-django/.venv/bin/python3
+#!/home/amnesia/Desktop/DTP/DTP-django/.venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
