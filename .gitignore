@@ -136,3 +136,13 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+#Scrappers
+backupscript.txt
+depnames.txt
+depscrapper.py
+facnames.txt
+facscrapper.py
+uninames.txt
+uniscrapper.py
+values.txt
