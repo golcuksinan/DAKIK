@@ -4,9 +4,6 @@ from accounts.models import Student
 from academic.models import Faculty, Department
 
 class StudentRegistrationForm(UserCreationForm):
-    #student_number = forms.CharField(max_length=20, required=True, label='Öğrenci Numarası')
-    #current_grade = forms.ChoiceField(choices=Student.GRADE_CHOICES, required=True, label='Mevcut Sınıf')
-
     class Meta:
         model = Student
         fields = [
