@@ -49,5 +49,10 @@ class StudentRegistrationForm(UserCreationForm):
 class StudentUpdateForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ['first_name', 'last_name', 'email', 'current_grade']
+        fields = ['first_name', 'last_name', 'email', 'student_number', 'current_grade']
+        labels = {
+            'email': 'E-posta',
+            'student_number': 'Öğrenci Numarası',
+            'current_grade': 'Mevcut Sınıf',
+        }
     
