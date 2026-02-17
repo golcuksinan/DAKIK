@@ -1,0 +1,122 @@
+Project Title: DAKIK
+
+Role: Senior Software Architect & System Analyst Specification
+Focus: Hierarchical Data Management, Crowdsourced Content, and Precise Attendance Tracking.
+1. System Overview
+
+The AASP is a specialized web platform designed for university students to track their course attendance. Unlike official university systems, this is a community-driven portal where students can manage personal data, share course materials (like signature sheets), and benefit from a hierarchical moderation system.
+Core Principles:
+
+    Hierarchy-First: Everything is scoped under University > Faculty > Department.
+
+    Crowdsourcing: Students suggest courses to a global pool; moderators approve them.
+
+    Data Integrity: Profiles are locked once created to ensure reporting accuracy.
+
+    Privacy: Attendance logs are strictly private to the individual student.
+
+2. Technical Stack
+
+    Backend: Python 3.12+ / Django 5.x
+
+    Database: PostgreSQL (Relational integrity is critical)
+
+    Authentication: django-allauth (Email verification required)
+
+    Storage: Local storage for development; Cloud (S3) for production (specifically for document uploads).
+
+3. Database Schema (Data Dictionary)
+A. Organizational Structure
+
+    University: id (UUID), name, slug, location.
+
+    Faculty: id (UUID), name, university_id (FK).
+
+    Department: id (UUID), name, faculty_id (FK).
+
+    AcademicPeriod: id (UUID), name, university_id (FK), start_date, end_date, is_active.
+
+        Logic: Periods are university-specific to accommodate different academic calendars.
+
+B. Users & Permissions
+
+    CustomUser: id, email, username, is_student.
+
+    Profile: user_id (OneToOne), university_id (FK), faculty_id (FK), department_id (FK).
+
+        Constraint: Immutable after registration to prevent data scope leakage.
+
+    ScopedPermission: user_id (FK), role (Enum), scope_level (Uni/Fac/Dept), scope_id (UUID).
+
+        Roles: COURSE_MOD, ANNOUNCEMENT_MOD, DOCUMENT_MOD, SUPER_MOD.
+
+C. Courses & Tracking
+
+    Course: id, name, code, department_id (FK), period_id (FK), is_global (Bool), suggested_by (FK/Null).
+
+        Constraint: Unique together (name, code, department, period, is_global=True).
+
+    Enrollment: id, user_id (FK), course_id (FK), target_limit (Int).
+
+    AttendanceLog: id, enrollment_id (FK), date, note (Text/Optional).
+
+        Logic: Date-based logging allows flexible "weekly" UI views and retrospective entries.
+
+D. Content & Audit
+
+    Announcement: id, title, body, scope_level, scope_id, author_id, expires_at.
+
+    Document: id, course_id (FK), file_path, category (IMZA, NOTES, OTHER), uploaded_by.
+
+        Constraint: Documents are only allowed for Global Courses.
+
+    Report: id, reported_by, content_type, object_id, reason, status (PENDING, RESOLVED).
+
+4. Key Business Logic (Functional Requirements)
+I. The Globalization Workflow (Merge Logic)
+
+    A student creates a Private Course.
+
+    The student requests the course to be Global.
+
+    Upon Moderator approval, the course becomes is_global=True.
+
+    Data Migration: The system notifies the original student and others with similar private courses. If confirmed, their AttendanceLog entries are re-linked to the new Global Course ID.
+
+II. Hierarchical Moderation (Escalation)
+
+    Reports follow the chain of command:
+
+        A report in a Department is handled by a Faculty Moderator.
+
+        A report in a Faculty is handled by a University Admin.
+
+    This ensures "Self-Governing" communities.
+
+III. Automated Period Archiving
+
+    When AcademicPeriod.end_date passes, a background task sets Enrollment.is_active to False.
+
+    Courses become Read-Only. Students can view their history but cannot add new attendance logs.
+
+5. Security & Validation Rules
+
+    IDOR Prevention: Every request must validate that the Enrollment object belongs to the request.user.
+
+    Scope Isolation: A moderator cannot view or edit content outside their assigned scope_id.
+
+    Soft Delete: Global courses and critical documents use an is_deleted flag instead of hard deletion to maintain log history for enrolled students.
+
+    Deleted User Legacy: If a user deletes their account, their name in the "Suggested By" (Leaderboard) is replaced with "Deleted User," but the Global Course remains.
+
+6. Prompting Instructions for LLM
+
+When generating code or features based on this knowledge base:
+
+    Strictly adhere to the UUID-based foreign key relationships.
+
+    Always implement the "Profile Lock" logic in registration views.
+
+    Prioritize Service Layers for the "Private-to-Global" migration logic to avoid messy views.
+
+    Ensure all Attendance views are filtered by request.user to maintain strict privacy.

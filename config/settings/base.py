@@ -36,7 +36,7 @@ LOCAL_APPS = [
 THIRD_PARTY_APPS = [
     # Add third party apps here
     'crispy_forms',
-    'crispy_bootstrap4',
+    'crispy_bootstrap5',
     'smart_selects',
 ]
 
@@ -122,4 +122,4 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/profile/'
 LOGOUT_REDIRECT_URL = '/login/'
 
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
