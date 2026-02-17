@@ -6,3 +6,4 @@ crispy-bootstrap5>=2024.2
 gunicorn
 whitenoise
 django-smart-selects>=1.6.0
+psycopg2-binary

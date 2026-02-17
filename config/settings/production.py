@@ -2,7 +2,7 @@ from .base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com']
+ALLOWED_HOSTS = ['devamsizliktakip.info.tr', 'www.devamsizliktakip.info.tr']
 
 # Production database (example with PostgreSQL)
 DATABASES = {
