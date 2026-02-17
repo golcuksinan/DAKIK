@@ -2,7 +2,13 @@ from .base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['devamsizliktakip.info.tr', 'www.devamsizliktakip.info.tr']
+ALLOWED_HOSTS = [
+    'devamsizliktakip.info.tr', 
+    'www.devamsizliktakip.info.tr', 
+    '192.168.1.100',  # Sunucunuzun sabit IP'si
+    'localhost', 
+    '127.0.0.1'
+]
 
 # Production database (example with PostgreSQL)
 DATABASES = {
@@ -20,3 +26,4 @@ DATABASES = {
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = ['https://devamsizliktakip.info.tr']
